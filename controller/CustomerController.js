@@ -7,11 +7,7 @@ const prisma = new PrismaClient()
 export const getCustomer = async (req,res) => {
     try{
         const data = await prisma.loundryModel.findMany()
-        res.json({
-            message : "data customer di temukan",
-            status : 200,
-            data : data
-        })
+        res.send(data)
     }catch(err){
         console.log(json)
         res.json({
@@ -25,9 +21,10 @@ export const getCustomer = async (req,res) => {
 export const createCustomer = async (req,res) => {
     try{
         const { nama_customer,total_cucian,total_harga } = req.body
-        if(!nama_customer.trim() || !total_cucian.trim() || total_harga.trim()){
+        if(!nama_customer.trim() || isNaN(total_cucian) || isNaN(total_harga)){
             return res.json({
-                message : "tolong isi data dengan benar"
+                message : "tolong isi data dengan benar",
+                status : 400
             })
         }
         const data = await prisma.loundryModel.create({
@@ -43,7 +40,7 @@ export const createCustomer = async (req,res) => {
             data : data
         })
     }catch(err){
-        console.log(json)
+        res.send(err)
         res.json({
             message : "data customer gagal di buat",
             status : 400
@@ -99,6 +96,19 @@ export const deleteCustomer = async (req,res) => {
         console.log(err)
         res.json({
             message : "data customer gagal di hapus",
+            status : 400
+        })
+    }
+}
+
+
+export const deleteMany = async (req,res) => {
+    try{
+        const data = await prisma.loundryModel.deleteMany()
+        res.send(data)
+    }catch(err){
+        res.json({
+            message : "data berhasil di hapus",
             status : 400
         })
     }

@@ -44,23 +44,37 @@ export const createAkun = async (req,res) => {
 }
 
 
+
+// Login akun
 export const LoginAkun = async (req,res) => {
     try{
         const { username,password } = req.body
-        let akunData = {
-            username : username,
-            password : password
-        }
 
-        if(username === akunData.username && password === akunData.password){
-            res.json({
-                message : "data akun benar",
-                status : 200
-            })
+        const data = await prisma.akunAdmin.findUnique({
+            where:{
+                username : username
+            }
+        })
+
+        if(username){
+            const passwordCompare = bcrypt.compareSync(password, data.password)
+
+            if(passwordCompare){
+                res.json({
+                    message : "akun benar",
+                    status : 200
+                })
+            }
+            else{
+                res.json({
+                    message : "akun salah",
+                    status : 400
+                })
+            }
         }
         else{
             res.json({
-                message : "data akun salah",
+                message : "login gagal",
                 status : 400
             })
         }
